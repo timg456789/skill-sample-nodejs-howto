@@ -1,7 +1,7 @@
 {
   "name": "skill-sample-nodejs-minecraft-helper",
   "version": "1.0.0",
-  "description": "Minecraft Helper sample skill",
+  "description": "art gallery sample skill",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

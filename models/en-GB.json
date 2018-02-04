@@ -1,7 +1,7 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "minecraft helper",
+      "invocationName": "art gallery",
       "intents": [
         {
           "name": "RecipeIntent",
@@ -136,9 +136,9 @@
             "what's the recipe for a {Item}",
             "what's the recipe for an {Item}",
             "what's the recipe for {Item}",
-            "how to craft {Item}",
-            "how to craft a {Item}",
-            "how to craft an {Item}",
+            "show works by {Item}",
+            "show works by a {Item}",
+            "show works by an {Item}",
             "how to make a {Item}",
             "how to make an {Item}",
             "how to make {Item}",

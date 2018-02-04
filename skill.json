@@ -1,5 +1,5 @@
 {
-  "skillManifest": {
+  "manifest": {
     "publishingInformation": {
       "locales": {
         "de-DE": {
@@ -8,19 +8,19 @@
         "en-US": {
           "summary": "Spend some time coming up with an interesting, succinct description.",
           "examplePhrases": [
-            "Alexa open Minecraft Helper",
-            "Alexa ask Minecraft Helper what's the recipe for a chest",
-            "Alexa ask Minecraft Helper how do I get a map"
+            "Alexa open art gallery",
+            "Alexa ask art gallery what's the recipe for a chest",
+            "Alexa ask art gallery how do I get a map"
           ],
           "keywords": [
             "Minecraft",
             "game"
           ],
-          "name": "Minecraft Helper",
+          "name": "art gallery",
           "description": "Sample Full Description"
         },
         "en-GB": {
-          "name": "British Minecraft Helper"
+          "name": "British art gallery"
         }
       },
       "isAvailableWorldwide": true,
