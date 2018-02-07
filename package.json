@@ -1,0 +1,23 @@
+{
+  "name": "alexa-art-gallery",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "trim-data-for-alexa": "node ./gallery-data-trimmer"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timg456789/skill-sample-nodejs-howto.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/timg456789/skill-sample-nodejs-howto/issues"
+  },
+  "homepage": "https://github.com/timg456789/skill-sample-nodejs-howto#readme",
+  "dependencies": {
+    "aws-sdk": "^2.190.0"
+  }
+}

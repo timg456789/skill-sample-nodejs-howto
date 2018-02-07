@@ -1,26 +1,16 @@
-/* eslint-disable  func-names */
-/* eslint quote-props: ["error", "consistent"]*/
-/**
- * This sample demonstrates a sample skill built with Amazon Alexa Skills nodejs
- * skill development kit.
- * This sample supports multiple languages (en-US, en-GB, de-GB).
- * The Intent Schema, Custom Slot and Sample Utterances for this skill, as well
- * as testing instructions are located at https://github.com/alexa/skill-sample-nodejs-howto
- **/
-
 'use strict';
 
 const Alexa = require('alexa-sdk');
-const recipes = require('./recipes');
-
-const APP_ID = undefined; // TODO replace with your app ID (OPTIONAL).
+let AWS = require('aws-sdk');
+AWS.config.update({region: 'us-east-1'});
+let ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+const APP_ID = 'amzn1.ask.skill.1377365e-6b9d-485d-b628-034819fe2c60';
 
 const languageStrings = {
     'en': {
         translation: {
-            RECIPES: recipes.RECIPE_EN_US,
             SKILL_NAME: 'art gallery',
-            WELCOME_MESSAGE: "Welcome to %s. You can ask a question like, show works by renoir. ... Now, what can I help you with?",
+            WELCOME_MESSAGE: "Welcome to %s. You can ask a question like, show works by pierre auguste renoir. ... Now, what can I help you with?",
             WELCOME_REPROMPT: 'For instructions on what you can say, please say help me.',
             DISPLAY_CARD_TITLE: '%s  - Recipe for %s.',
             HELP_MESSAGE: "You can ask a question like, show works by renoir. ... Now, what can I help you with?",
@@ -35,19 +25,16 @@ const languageStrings = {
     },
     'en-US': {
         translation: {
-            RECIPES: recipes.RECIPE_EN_US,
             SKILL_NAME: 'American art gallery',
         },
     },
     'en-GB': {
         translation: {
-            RECIPES: recipes.RECIPE_EN_GB,
             SKILL_NAME: 'British art gallery',
         },
     },
     'de': {
         translation: {
-            RECIPES: recipes.RECIPE_DE_DE,
             SKILL_NAME: 'Assistent für Art Gallery in Deutsch',
             WELCOME_MESSAGE: 'Willkommen bei %s. Du kannst beispielsweise die Frage stellen: Welche Rezepte gibt es für eine Truhe? ... Nun, womit kann ich dir helfen?',
             WELCOME_REPROMPT: 'Wenn du wissen möchtest, was du sagen kannst, sag einfach „Hilf mir“.',
@@ -72,7 +59,6 @@ const handlers = {
         // If the user either does not reply to the welcome message or says something that is not
         // understood, they will be prompted again with this text.
         this.attributes.repromptSpeech = this.t('WELCOME_REPROMPT');
-
         this.response.speak(this.attributes.speechOutput).listen(this.attributes.repromptSpeech);
         this.emit(':responseReady');
     },
@@ -82,34 +68,55 @@ const handlers = {
         if (itemSlot && itemSlot.value) {
             itemName = itemSlot.value.toLowerCase();
         }
-
+        console.log('searching for ' + itemName);
         const cardTitle = this.t('DISPLAY_CARD_TITLE', this.t('SKILL_NAME'), itemName);
-        const myRecipes = this.t('RECIPES');
-        const recipe = myRecipes[itemName];
-
-        if (recipe) {
-            this.attributes.speechOutput = recipe;
-            this.attributes.repromptSpeech = this.t('RECIPE_REPEAT_MESSAGE');
-
-            this.response.speak(recipe).listen(this.attributes.repromptSpeech);
-            this.response.cardRenderer(cardTitle, recipe);
-            this.emit(':responseReady');
-        } else {
-            let speechOutput = this.t('RECIPE_NOT_FOUND_MESSAGE');
-            const repromptSpeech = this.t('RECIPE_NOT_FOUND_REPROMPT');
-            if (itemName) {
-                speechOutput += this.t('RECIPE_NOT_FOUND_WITH_ITEM_NAME', itemName);
+        let params = {
+            TableName: 'ImageClassificationV2',
+            ExpressionAttributeValues: {
+                ":artist": {
+                    S: itemName
+                }
+            },
+            KeyConditionExpression: "artist = :artist",
+            IndexName: "ArtistNameIndex"
+        };
+        let self = this;
+        ddb.query(params, function(err, data) {
+            if (err) {
+                console.log("Error", err);
             } else {
-                speechOutput += this.t('RECIPE_NOT_FOUND_WITHOUT_ITEM_NAME');
+                console.log(`found ${data.Items.length} items`);
+                if (data.Items.length > 0) {
+                    let nameAndDateForArtist = data
+                        .Items
+                        .map(item => item.name.S + '(' + item.date.S + ')')
+                        .join(', ');
+                    const alexaSpeechOutputLimit = 7800; // https://stackoverflow.com/questions/36557053/alexa-skill-ssml-max-length
+                    if (nameAndDateForArtist.length > alexaSpeechOutputLimit) {
+                        nameAndDateForArtist = nameAndDateForArtist.substring(0, alexaSpeechOutputLimit) + '...';
+                    }
+                    self.attributes.speechOutput = nameAndDateForArtist;
+                    self.attributes.repromptSpeech = self.t('RECIPE_REPEAT_MESSAGE');
+                    self.response.speak(nameAndDateForArtist).listen(self.attributes.repromptSpeech);
+                    self.response.cardRenderer(cardTitle, nameAndDateForArtist);
+                    self.emit(':responseReady');
+                } else {
+                    let speechOutput = self.t('RECIPE_NOT_FOUND_MESSAGE');
+                    const repromptSpeech = self.t('RECIPE_NOT_FOUND_REPROMPT');
+                    if (itemName) {
+                        speechOutput += self.t('RECIPE_NOT_FOUND_WITH_ITEM_NAME', itemName);
+                    } else {
+                        speechOutput += self.t('RECIPE_NOT_FOUND_WITHOUT_ITEM_NAME');
+                    }
+                    speechOutput += repromptSpeech;
+                    self.attributes.speechOutput = speechOutput;
+                    self.attributes.repromptSpeech = repromptSpeech;
+                    self.response.speak(speechOutput).listen(repromptSpeech);
+                    self.emit(':responseReady');
+                }
             }
-            speechOutput += repromptSpeech;
+        });
 
-            this.attributes.speechOutput = speechOutput;
-            this.attributes.repromptSpeech = repromptSpeech;
-
-            this.response.speak(speechOutput).listen(repromptSpeech);
-            this.emit(':responseReady');
-        }
     },
     'AMAZON.HelpIntent': function () {
         this.attributes.speechOutput = this.t('HELP_MESSAGE');
@@ -142,9 +149,9 @@ const handlers = {
 };
 
 exports.handler = function (event, context, callback) {
+    console.log(JSON.stringify(event));
     const alexa = Alexa.handler(event, context, callback);
     alexa.APP_ID = APP_ID;
-    // To enable string internationalization (i18n) features, set a resources object.
     alexa.resources = languageStrings;
     alexa.registerHandlers(handlers);
     alexa.execute();
