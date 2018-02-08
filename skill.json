@@ -2,29 +2,20 @@
   "manifest": {
     "publishingInformation": {
       "locales": {
-        "de-DE": {
-          "name": "Assistent für Minecraft in Deutsch"
-        },
         "en-US": {
-          "summary": "Spend some time coming up with an interesting, succinct description.",
+          "summary": "Search art and artists.",
           "examplePhrases": [
-            "Alexa open art gallery",
-            "Alexa ask art gallery what's the recipe for a chest",
-            "Alexa ask art gallery how do I get a map"
+            "Alexa open art gallery"
           ],
           "keywords": [
-            "Minecraft",
-            "game"
+            "Art gallery"
           ],
           "name": "art gallery",
-          "description": "Sample Full Description"
-        },
-        "en-GB": {
-          "name": "British art gallery"
+          "description": ""
         }
       },
       "isAvailableWorldwide": true,
-      "testingInstructions": "Sample Testing Instructions.",
+      "testingInstructions": "",
       "category": "EDUCATION_AND_REFERENCE",
       "distributionCountries": []
     },

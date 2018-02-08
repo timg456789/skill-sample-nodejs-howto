@@ -9,8 +9,8 @@ const APP_ID = 'amzn1.ask.skill.1377365e-6b9d-485d-b628-034819fe2c60';
 const languageStrings = {
     'en': {
         translation: {
-            SKILL_NAME: 'art gallery',
-            WELCOME_MESSAGE: "Welcome to %s. You can ask a question like, show works by pierre auguste renoir. ... Now, what can I help you with?",
+            SKILL_NAME: 'Art gallery',
+            WELCOME_MESSAGE: "Welcome to the %s. You can ask a question like, show works by pierre auguste renoir or  ... Whose works would you like to view?",
             WELCOME_REPROMPT: 'For instructions on what you can say, please say help me.',
             DISPLAY_CARD_TITLE: '%s  - Recipe for %s.',
             HELP_MESSAGE: "You can ask a question like, show works by renoir. ... Now, what can I help you with?",
@@ -25,30 +25,9 @@ const languageStrings = {
     },
     'en-US': {
         translation: {
-            SKILL_NAME: 'American art gallery',
+            SKILL_NAME: 'Art gallery',
         },
-    },
-    'en-GB': {
-        translation: {
-            SKILL_NAME: 'British art gallery',
-        },
-    },
-    'de': {
-        translation: {
-            SKILL_NAME: 'Assistent für Art Gallery in Deutsch',
-            WELCOME_MESSAGE: 'Willkommen bei %s. Du kannst beispielsweise die Frage stellen: Welche Rezepte gibt es für eine Truhe? ... Nun, womit kann ich dir helfen?',
-            WELCOME_REPROMPT: 'Wenn du wissen möchtest, was du sagen kannst, sag einfach „Hilf mir“.',
-            DISPLAY_CARD_TITLE: '%s - Rezept für %s.',
-            HELP_MESSAGE: 'Du kannst beispielsweise Fragen stellen wie „Wie geht das Rezept für“ oder du kannst „Beenden“ sagen ... Wie kann ich dir helfen?',
-            HELP_REPROMPT: 'Du kannst beispielsweise Sachen sagen wie „Wie geht das Rezept für“ oder du kannst „Beenden“ sagen ... Wie kann ich dir helfen?',
-            STOP_MESSAGE: 'Auf Wiedersehen!',
-            RECIPE_REPEAT_MESSAGE: 'Sage einfach „Wiederholen“.',
-            RECIPE_NOT_FOUND_MESSAGE: 'Tut mir leid, ich kenne derzeit ',
-            RECIPE_NOT_FOUND_WITH_ITEM_NAME: 'das Rezept für %s nicht. ',
-            RECIPE_NOT_FOUND_WITHOUT_ITEM_NAME: 'dieses Rezept nicht. ',
-            RECIPE_NOT_FOUND_REPROMPT: 'Womit kann ich dir sonst helfen?',
-        },
-    },
+    }
 };
 
 const handlers = {
@@ -63,7 +42,7 @@ const handlers = {
         this.emit(':responseReady');
     },
     'RecipeIntent': function () {
-        const itemSlot = this.event.request.intent.slots.Item;
+        const itemSlot = this.event.request.intent.slots.Artist;
         let itemName;
         if (itemSlot && itemSlot.value) {
             itemName = itemSlot.value.toLowerCase();
@@ -88,6 +67,61 @@ const handlers = {
                 console.log(`found ${data.Items.length} items`);
                 if (data.Items.length > 0) {
                     let nameAndDateForArtist = data
+                        .Items
+                        .map(item => item.name.S + '(' + item.date.S + ')')
+                        .join(', ');
+                    const alexaSpeechOutputLimit = 7800; // https://stackoverflow.com/questions/36557053/alexa-skill-ssml-max-length
+                    if (nameAndDateForArtist.length > alexaSpeechOutputLimit) {
+                        nameAndDateForArtist = nameAndDateForArtist.substring(0, alexaSpeechOutputLimit) + '...';
+                    }
+                    self.attributes.speechOutput = nameAndDateForArtist;
+                    self.attributes.repromptSpeech = self.t('RECIPE_REPEAT_MESSAGE');
+                    self.response.speak(nameAndDateForArtist).listen(self.attributes.repromptSpeech);
+                    self.response.cardRenderer(cardTitle, nameAndDateForArtist);
+                    self.emit(':responseReady');
+                } else {
+                    let speechOutput = self.t('RECIPE_NOT_FOUND_MESSAGE');
+                    const repromptSpeech = self.t('RECIPE_NOT_FOUND_REPROMPT');
+                    if (itemName) {
+                        speechOutput += self.t('RECIPE_NOT_FOUND_WITH_ITEM_NAME', itemName);
+                    } else {
+                        speechOutput += self.t('RECIPE_NOT_FOUND_WITHOUT_ITEM_NAME');
+                    }
+                    speechOutput += repromptSpeech;
+                    self.attributes.speechOutput = speechOutput;
+                    self.attributes.repromptSpeech = repromptSpeech;
+                    self.response.speak(speechOutput).listen(repromptSpeech);
+                    self.emit(':responseReady');
+                }
+            }
+        });
+    },
+    'ArtistIntent': function () {
+        const itemSlot = this.event.request.intent.slots.Artist;
+        let itemName;
+        if (itemSlot && itemSlot.value) {
+            itemName = itemSlot.value.toLowerCase();
+        }
+        console.log('searching for ' + itemName);
+        const cardTitle = this.t('DISPLAY_CARD_TITLE', this.t('SKILL_NAME'), itemName);
+        let params = {
+            TableName: 'ImageClassificationV2',
+            IndexName: 'ArtistNameOnlyIndex',
+            ExpressionAttributeValues: {
+                ":artist": {
+                    S: itemName
+                }
+            },
+            FilterExpression: 'contains(artist, :artist)'
+        };
+        let self = this;
+        ddb.scan(params, function(err, data) {
+            if (err) {
+                console.log("Error", err);
+            } else {
+                console.log(`found ${data.Items.length} items`);
+                if (data.Items.length > 0) {
+                    let nameAndDateForArtist = 'beep! beep! dooo! doo! ' + data
                         .Items
                         .map(item => item.name.S + '(' + item.date.S + ')')
                         .join(', ');

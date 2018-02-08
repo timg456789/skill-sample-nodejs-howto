@@ -2,6 +2,8 @@
 
 Ask alexa to show images for an artist and alexa will begin speaking the images she *can* show for an artist. Alexa can name over 300,000 images and their artists!
 
+Parent Project: https://github.com/timg456789/SlideshowCreator
+
 ## Conversation
 
 person: "alexa open art gallery"
@@ -15,3 +17,7 @@ alexa: A Bather(1885-1890), A Bouquet of Roses(1879), A Bowlful of Roses(Date un
 ## Issues
 
 Some artists will cause an error, because the data has html tags and alexa has its own markup. That can be fixed in the data.
+
+## Alexa Development
+
+https://developer.amazon.com/edw/home.html#/skills
