@@ -10,7 +10,7 @@ const languageStrings = {
     'en': {
         translation: {
             SKILL_NAME: 'Art gallery',
-            WELCOME_MESSAGE: "Welcome to the %s. You can ask a question like, show works by pierre auguste renoir or  ... Whose works would you like to view?",
+            WELCOME_MESSAGE: "Welcome to the %s. You can ask a question like, show works by pierre auguste renoir or  name artists like jackson... Whose works would you like to view?",
             WELCOME_REPROMPT: 'For instructions on what you can say, please say help me.',
             DISPLAY_CARD_TITLE: '%s  - Recipe for %s.',
             HELP_MESSAGE: "You can ask a question like, show works by renoir. ... Now, what can I help you with?",
@@ -105,8 +105,7 @@ const handlers = {
         console.log('searching for ' + itemName);
         const cardTitle = this.t('DISPLAY_CARD_TITLE', this.t('SKILL_NAME'), itemName);
         let params = {
-            TableName: 'ImageClassificationV2',
-            IndexName: 'ArtistNameOnlyIndex',
+            TableName: 'ImageArtist',
             ExpressionAttributeValues: {
                 ":artist": {
                     S: itemName
@@ -121,9 +120,9 @@ const handlers = {
             } else {
                 console.log(`found ${data.Items.length} items`);
                 if (data.Items.length > 0) {
-                    let nameAndDateForArtist = 'beep! beep! dooo! doo! ' + data
+                    let nameAndDateForArtist = data
                         .Items
-                        .map(item => item.name.S + '(' + item.date.S + ')')
+                        .map(item => item.artist.S)
                         .join(', ');
                     const alexaSpeechOutputLimit = 7800; // https://stackoverflow.com/questions/36557053/alexa-skill-ssml-max-length
                     if (nameAndDateForArtist.length > alexaSpeechOutputLimit) {

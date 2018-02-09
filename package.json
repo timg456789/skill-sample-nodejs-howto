@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "trim-data-for-alexa": "node ./gallery-data-trimmer"
+    "test": "node ./tests/data-fetch-test",
+    "deploy": "ask deploy"
   },
   "repository": {
     "type": "git",
