@@ -1,8 +1,6 @@
 # Alexa Art Gallery
 
-Alexa can **name artists like** and **name works by**. A script you can speak out is below. Alexa knows about 300,000 artists and their works.
-
-Parent Project: https://github.com/timg456789/SlideshowCreator
+Alexa can **name artists like** and **name works by**. Scripts you can read with alexa are below.
 
 ## Script 1 - Rembrandt
 

@@ -4,7 +4,7 @@
       "invocationName": "art gallery",
       "intents": [
         {
-          "name": "RecipeIntent",
+          "name": "ArtistWorkIntent",
           "slots": [
             {
               "name": "Artist",
@@ -41,6 +41,9 @@
         },
         {
           "name": "AMAZON.StopIntent"
+        },
+        {
+          "name": "AMAZON.PauseIntent"
         },
         {
           "name": "AMAZON.CancelIntent"

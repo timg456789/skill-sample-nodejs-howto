@@ -12,15 +12,15 @@ const languageStrings = {
             SKILL_NAME: 'Art gallery',
             WELCOME_MESSAGE: "Welcome to the %s. You can ask a question like, name works by pierre auguste renoir or  name artists like jackson... Whose works would you like to view?",
             WELCOME_REPROMPT: 'For instructions on what you can say, please say help me.',
-            DISPLAY_CARD_TITLE: '%s  - Recipe for %s.',
+            DISPLAY_CARD_TITLE: '%s  - Matches for %s.',
             HELP_MESSAGE: "You can ask a question like, name works by renoir. ... Now, what can I help you with?",
             HELP_REPROMPT: "You can ask a question like, name works by renoir. ... Now, what can I help you with?",
             STOP_MESSAGE: 'Goodbye!',
-            RECIPE_REPEAT_MESSAGE: 'Try saying repeat.',
-            RECIPE_NOT_FOUND_MESSAGE: "I\'m sorry, I currently do not know ",
-            RECIPE_NOT_FOUND_WITH_ITEM_NAME: 'the work by %s. ',
-            RECIPE_NOT_FOUND_WITHOUT_ITEM_NAME: 'that work of art. ',
-            RECIPE_NOT_FOUND_REPROMPT: 'What else can I help with?',
+            ITEM_REPEAT_MESSAGE: 'Try saying repeat.',
+            ITEM_NOT_FOUND_MESSAGE: "I\'m sorry, I currently do not know ",
+            ITEM_NOT_FOUND_WITH_ITEM_NAME: 'the work by %s. ',
+            ITEM_NOT_FOUND_WITHOUT_ITEM_NAME: 'that work of art. ',
+            ITEM_NOT_FOUND_REPROMPT: 'What else can I help with?',
         },
     },
     'en-US': {
@@ -41,7 +41,8 @@ const handlers = {
         this.response.speak(this.attributes.speechOutput).listen(this.attributes.repromptSpeech);
         this.emit(':responseReady');
     },
-    'RecipeIntent': function () {
+    'ArtistWorkIntent': function () {
+        let self = this;
         const itemSlot = this.event.request.intent.slots.Artist;
         let itemName;
         if (itemSlot && itemSlot.value) {
@@ -49,6 +50,14 @@ const handlers = {
         }
         console.log('searching for ' + itemName);
         const cardTitle = this.t('DISPLAY_CARD_TITLE', this.t('SKILL_NAME'), itemName);
+        if (!itemName) {
+            let unfoundResponse = 'an artist name must be provided to list their works of art';
+            self.attributes.speechOutput = unfoundResponse;
+            self.attributes.repromptSpeech = self.t('ITEM_REPEAT_MESSAGE');
+            self.response.speak(unfoundResponse).listen(self.attributes.repromptSpeech);
+            self.response.cardRenderer(cardTitle, unfoundResponse);
+            self.emit(':responseReady');
+        }
         let params = {
             TableName: 'ImageClassificationV2',
             ExpressionAttributeValues: {
@@ -59,7 +68,6 @@ const handlers = {
             KeyConditionExpression: "artist = :artist",
             IndexName: "ArtistNameIndex"
         };
-        let self = this;
         ddb.query(params, function(err, data) {
             if (err) {
                 console.log("Error", err);
@@ -75,17 +83,17 @@ const handlers = {
                         nameAndDateForArtist = nameAndDateForArtist.substring(0, alexaSpeechOutputLimit) + '...';
                     }
                     self.attributes.speechOutput = nameAndDateForArtist;
-                    self.attributes.repromptSpeech = self.t('RECIPE_REPEAT_MESSAGE');
+                    self.attributes.repromptSpeech = self.t('ITEM_REPEAT_MESSAGE');
                     self.response.speak(nameAndDateForArtist).listen(self.attributes.repromptSpeech);
                     self.response.cardRenderer(cardTitle, nameAndDateForArtist);
                     self.emit(':responseReady');
                 } else {
-                    let speechOutput = self.t('RECIPE_NOT_FOUND_MESSAGE');
-                    const repromptSpeech = self.t('RECIPE_NOT_FOUND_REPROMPT');
+                    let speechOutput = self.t('ITEM_NOT_FOUND_MESSAGE');
+                    const repromptSpeech = self.t('ITEM_NOT_FOUND_REPROMPT');
                     if (itemName) {
-                        speechOutput += self.t('RECIPE_NOT_FOUND_WITH_ITEM_NAME', itemName);
+                        speechOutput += self.t('ITEM_NOT_FOUND_WITH_ITEM_NAME', itemName);
                     } else {
-                        speechOutput += self.t('RECIPE_NOT_FOUND_WITHOUT_ITEM_NAME');
+                        speechOutput += self.t('ITEM_NOT_FOUND_WITHOUT_ITEM_NAME');
                     }
                     speechOutput += repromptSpeech;
                     self.attributes.speechOutput = speechOutput;
@@ -129,17 +137,17 @@ const handlers = {
                         nameAndDateForArtist = nameAndDateForArtist.substring(0, alexaSpeechOutputLimit) + '...';
                     }
                     self.attributes.speechOutput = nameAndDateForArtist;
-                    self.attributes.repromptSpeech = self.t('RECIPE_REPEAT_MESSAGE');
+                    self.attributes.repromptSpeech = self.t('ITEM_REPEAT_MESSAGE');
                     self.response.speak(nameAndDateForArtist).listen(self.attributes.repromptSpeech);
                     self.response.cardRenderer(cardTitle, nameAndDateForArtist);
                     self.emit(':responseReady');
                 } else {
-                    let speechOutput = self.t('RECIPE_NOT_FOUND_MESSAGE');
-                    const repromptSpeech = self.t('RECIPE_NOT_FOUND_REPROMPT');
+                    let speechOutput = self.t('ITEM_NOT_FOUND_MESSAGE');
+                    const repromptSpeech = self.t('ITEM_NOT_FOUND_REPROMPT');
                     if (itemName) {
-                        speechOutput += self.t('RECIPE_NOT_FOUND_WITH_ITEM_NAME', itemName);
+                        speechOutput += self.t('ITEM_NOT_FOUND_WITH_ITEM_NAME', itemName);
                     } else {
-                        speechOutput += self.t('RECIPE_NOT_FOUND_WITHOUT_ITEM_NAME');
+                        speechOutput += self.t('ITEM_NOT_FOUND_WITHOUT_ITEM_NAME');
                     }
                     speechOutput += repromptSpeech;
                     self.attributes.speechOutput = speechOutput;
@@ -184,7 +192,7 @@ const handlers = {
 exports.handler = function (event, context, callback) {
     console.log(JSON.stringify(event));
     const alexa = Alexa.handler(event, context, callback);
-    alexa.APP_ID = APP_ID;
+    alexa.appId = APP_ID;
     alexa.resources = languageStrings;
     alexa.registerHandlers(handlers);
     alexa.execute();

@@ -5,17 +5,24 @@
         "en-US": {
           "summary": "Search art and artists.",
           "examplePhrases": [
-            "Alexa open art gallery"
+            "Alexa open art gallery",
+            "Name artists like vincent",
+            "Show works by Vincent van Gogh"
           ],
           "keywords": [
-            "Art gallery"
+            "Art gallery",
+            "images",
+            "paintings",
+            "drawings",
+            "art",
+            "gallery"
           ],
           "name": "art gallery",
-          "description": ""
+          "description": "Search artists names and their works."
         }
       },
       "isAvailableWorldwide": true,
-      "testingInstructions": "",
+      "testingInstructions": "person: alexa open art gallery\r\n\r\nalexa: Welcome to the Art gallery. You can ask a question like, name works by pierre auguste renoir or name artists like jackson... Whose works would you like to view?\r\n\r\nperson: name artists like rembr\r\n\r\nalexa: rembrandt van rijn, rembrandt peale\r\n\r\nperson: name works by rembrandt van peale\r\n\r\nalexa: I'm sorry, I currently do not know the work by rembrandt van peale. What else can I help with?\r\n\r\nperson: name works by rembrandt peale\r\n\r\nalexa: A Roman Lady(Date unknown), Abigail Inskeep Bradford(1803-1808), Alida Livingston Armstrong and Daughter(circa 1810), Boy from the Taylor Family(circa 1812), Caroline Louisa Pratt Bartlett(1835-1836), Chancellor James Kent(1834-1835), Charles Hodge(Date unknown)...\r\n\r\nperson: stop\r\n\r\nalexa: Goodbye!\r\n\r\nperson: name works by rembrandt van rijn\r\n\r\nalexa: Sorry. Music and radio playback are not supported on this device.\r\n\r\nperson: alexa open art gallery\r\n\r\nalexa: Welcome to the Art gallery. You can ask a question like, name works by pierre auguste renoir or name artists like jackson... Whose works would you like to view?\r\n\r\nperson: rembrandt van rijn\r\n\r\nalexa: A Bald Man in Profile (The Artist's Father?)(1630), A Battle-Piece(circa 1641), A Beggar Sitting in an Elbow Chair(1630), A Beggar Sitting on a Hollock, with his Mouth Open(1630), A Beggar Standing and Leaning on a Stick(1632), A Beggar Standing, Seen in Profile to the Left(1630), A Beggar Warming his Hands over a Chafing Dish(1630), A Beggar with a Wooden Leg(1630)...",
       "category": "EDUCATION_AND_REFERENCE",
       "distributionCountries": []
     },
