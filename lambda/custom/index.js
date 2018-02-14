@@ -10,11 +10,11 @@ const languageStrings = {
     'en': {
         translation: {
             SKILL_NAME: 'Art gallery',
-            WELCOME_MESSAGE: "Welcome to the %s. You can ask a question like, show works by pierre auguste renoir or  name artists like jackson... Whose works would you like to view?",
+            WELCOME_MESSAGE: "Welcome to the %s. You can ask a question like, name works by pierre auguste renoir or  name artists like jackson... Whose works would you like to view?",
             WELCOME_REPROMPT: 'For instructions on what you can say, please say help me.',
             DISPLAY_CARD_TITLE: '%s  - Recipe for %s.',
-            HELP_MESSAGE: "You can ask a question like, show works by renoir. ... Now, what can I help you with?",
-            HELP_REPROMPT: "You can ask a question like, show works by renoir. ... Now, what can I help you with?",
+            HELP_MESSAGE: "You can ask a question like, name works by renoir. ... Now, what can I help you with?",
+            HELP_REPROMPT: "You can ask a question like, name works by renoir. ... Now, what can I help you with?",
             STOP_MESSAGE: 'Goodbye!',
             RECIPE_REPEAT_MESSAGE: 'Try saying repeat.',
             RECIPE_NOT_FOUND_MESSAGE: "I\'m sorry, I currently do not know ",

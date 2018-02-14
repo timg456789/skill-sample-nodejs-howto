@@ -12,11 +12,11 @@
             }
           ],
           "samples": [
-            "show works by {Artist}",
-            "show images by {Artist}",
-            "show paintings by {Artist}",
-            "show drawings by {Artist}",
-            "show pictures by {Artist}"
+            "name works by {Artist}",
+            "name images by {Artist}",
+            "name paintings by {Artist}",
+            "name drawings by {Artist}",
+            "name pictures by {Artist}"
           ]
         },
         {
